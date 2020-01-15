@@ -92,6 +92,9 @@ class RaceChat(Race):
         return http.JsonResponse({
             'messages': list(messages.values()),
             'tick_rate': self.object.tick_rate,
+            'chat_message_delay': self.object.chat_message_delay.seconds,
+            'current_user': self.user.get_full_name(),
+            'can_monitor': self.object.can_monitor(self.user),
         })
 
 
@@ -175,5 +178,13 @@ class EditRace(CanMonitorRaceMixin, UserMixin, RaceFormMixin, generic.UpdateView
                 race.add_message('Streaming is now required for this race.')
             else:
                 race.add_message('Streaming is now NOT required for this race.')
+        if 'chat_message_delay' in form.changed_data:
+            if race.chat_message_delay:
+                race.add_message(
+                    'Chat delay is now %(seconds)d seconds.'
+                    % {'seconds': race.chat_message_delay.seconds}
+                )
+            else:
+                race.add_message('Chat delay has been removed.')
 
         return http.HttpResponseRedirect(race.get_absolute_url())

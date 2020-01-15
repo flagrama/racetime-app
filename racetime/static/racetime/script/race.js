@@ -137,6 +137,9 @@ $(function() {
                             updateRace = true;
                         }
                         else {
+                            var delay_time = new Date(Date.now() - 1000 * data.chat_message_delay);
+                            if(message.user.flair !== 'staff' && !data.can_monitor && delay_time < date && String(message.user.full_name) !== String(data.current_user))
+                                return;
                             var $li = $(
                                 '<li class="' + (message.highlight ? 'highlight' : '') + '">' +
                                 '<span class="timestamp">' + timestamp + '</span>' +

@@ -135,6 +135,18 @@ class Race(models.Model):
             'race is in progress (anyone may use chat before and after the race).'
         ),
     )
+    chat_message_delay = models.DurationField(
+        default=timedelta(seconds=0),
+        validators=[
+            MinValueValidator(timedelta(seconds=0)),
+            MaxValueValidator(timedelta(seconds=30)),
+        ],
+        help_text=(
+            'The length of time that chat messages display for only monitors. '
+            'After this delay messages that have not been deleted will display '
+            'to everyone.'
+        ),
+    )
     monitors = models.ManyToManyField(
         'User',
         related_name='+',
@@ -415,6 +427,7 @@ class Race(models.Model):
             'recorded_by': self.recorded_by.api_dict_summary(race=self) if self.recorded_by else None,
             'allow_comments': self.allow_comments,
             'allow_midrace_chat': self.allow_midrace_chat,
+            'chat_message_delay': self.chat_message_delay,
         }, cls=DjangoJSONEncoder)
 
         cache.set(str(self) + '/data', value, None)
