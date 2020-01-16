@@ -9,15 +9,19 @@ Monitor actions (per-user):
     Force ready/un-ready (open/inv/pending)
     Force quit (open/inv/pending)
     Disqualify (in_prog/finished)
+Monitor actions (chat):
+    Delete message
 
 """
+from django.apps import apps
 from django.http import Http404
 from django.views import generic
+from django.shortcuts import render
 
 from .base import BaseRaceAction, CanModerateRaceMixin, CanMonitorRaceMixin
-from ..forms import InviteForm
+from ..forms import InviteForm, ChatMonitorActionForm
 from ..models import Entrant, User
-from ..utils import SafeException
+from ..utils import SafeException, get_hashids
 
 
 class EntrantAction:
@@ -47,6 +51,10 @@ class MonitorRaceAction(CanMonitorRaceMixin, BaseRaceAction):
     pass
 
 
+class MonitorChatAction(CanMonitorRaceMixin, BaseRaceAction):
+    pass
+
+
 class ModeratorEntrantAction(CanModerateRaceMixin, EntrantAction, BaseRaceAction):
     pass
 
@@ -63,6 +71,38 @@ class BeginRace(MonitorRaceAction):
 class CancelRace(MonitorRaceAction):
     def action(self, race, user):
         race.cancel(cancelled_by=user)
+
+
+class DeleteMessage(MonitorChatAction, generic.FormView):
+    form_class = ChatMonitorActionForm
+
+    def action(self, race, user):
+        form = self.get_form()
+        if not form.is_valid():
+            raise SafeException(form.errors)
+        if not self.get_race().can_monitor(self.user):
+            raise SafeException(
+                '%(user)s does not have permission to monitor chat messages.' % {'user': self.user}
+            )
+
+        Message = apps.get_model('racetime', 'Message')
+        message_id = get_hashids(Message).decode(form.data['hashid'])[0]
+        message = Message.objects.get(pk=message_id)
+        message.delete_message(self.user)
+
+
+class RaceChatActions(MonitorChatAction):
+    def action(self, race, user):
+        pass
+
+    def get(self, request, race, category):
+        Race = apps.get_model('racetime', 'Race')
+        this_race = Race.objects.filter(slug=race)[0]
+        if not this_race.can_monitor(self.user):
+            raise SafeException(
+                '%(user)s does not have permission to monitor chat messages.' % {'user': self.user}
+            )
+        return render(request, 'racetime/race/monitor_chat.html', {'race': race, 'category': category, 'message_id': request.GET['message_id']})
 
 
 class InviteToRace(MonitorRaceAction, generic.FormView):

@@ -138,7 +138,7 @@ $(function() {
                         }
                         else {
                             var delay_time = new Date(Date.now() - 1000 * data.chat_message_delay);
-                            if(message.user.flair !== 'staff' && !data.can_monitor && delay_time < date && String(message.user.full_name) !== String(data.current_user))
+                            if(delay_time < date && (message.user.flair !== 'staff' || !data.can_monitor || String(message.user.full_name) !== String(data.current_user)))
                                 return;
                             var $li = $(
                                 '<li class="' + (message.highlight ? 'highlight' : '') + '">' +
@@ -155,6 +155,30 @@ $(function() {
                             }));
                             $messages.append($li);
                             doScroll = true;
+
+                            if (data.can_monitor) {
+                                $.ajax({
+                                    url: raceChatMonitorActionsLink,
+                                    type: 'get',
+                                    data: {
+                                        message_id: message.id,
+                                    },
+                                    success: function (actions_data) {
+                                        $(actions_data).insertBefore($li.find('.timestamp'));
+                                        $li.find('form').ajaxForm({
+                                            error: onError,
+                                            success: function() {
+                                                $li.find('form').remove();
+                                                $li.css('text-decoration', 'line-through');
+                                                chatTick();
+                                            }
+                                        });
+                                    },
+                                    failure: function (actions_data) {
+                                        console.error("Failed to get race monitor chat actions.")
+                                    }
+                                });
+                            }
                         }
                         messageIDs.push(message.id);
                     });

@@ -1,6 +1,7 @@
 from django.db import models
+from django.utils import timezone
 
-from ..utils import get_hashids
+from ..utils import get_hashids, SafeException
 
 
 class Message(models.Model):
@@ -35,6 +36,20 @@ class Message(models.Model):
         null=True,
         default=None,
     )
+
+    def delete_message(self, deleted_by):
+        """
+        Delete the message.
+        """
+        if self.deleted:
+            raise SafeException(
+                'Cannot delete a message that is already deleted.'
+            )
+
+        self.deleted = True
+        self.deleted_at = timezone.now()
+        self.deleted_by_id = deleted_by.id
+        self.save()
 
     @property
     def hashid(self):

@@ -1,0 +1,7 @@
+<span class="dangerous delete">
+    <form style="display:inline" class="race-chat-monitor-action-form" action="{% url 'delete_message' race=race category=category %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="hashid" value="{{ message_id }}" />
+        <button type="submit" class="btn">Delete</button>
+    </form>
+</span>

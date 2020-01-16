@@ -18,6 +18,11 @@ class ChatForm(forms.ModelForm):
         model = models.Message
 
 
+class ChatMonitorActionForm(forms.Form):
+    class Meta:
+        fields = ('hashid',)
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         fields = ('comment',)

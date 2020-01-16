@@ -1,3 +1,9 @@
+{% block js %}
+<script>
+var raceChatMonitorActionsLink = '{% url 'chat_actions' category=race.category.slug race=race.slug %}';
+</script>
+{% endblock %}
+
 {% if race.streaming_required and user.is_authenticated and not user.twitch_channel %}
     <div class="streaming-required">
         <p>

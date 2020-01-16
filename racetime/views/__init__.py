@@ -53,6 +53,8 @@ from .race_monitor_actions import (
     Undisqualify,
     AddMonitor,
     RemoveMonitor,
+    RaceChatActions,
+    DeleteMessage,
 )
 from .user import (
     CreateAccount,
@@ -114,6 +116,8 @@ __all__ = [
     'Undisqualify',
     'AddMonitor',
     'RemoveMonitor',
+    'RaceChatActions',
+    'DeleteMessage',
     # user
     'CreateAccount',
     'EditAccount',

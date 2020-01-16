@@ -56,6 +56,8 @@ urlpatterns = [
             path('invite', views.InviteToRace.as_view(), name='invite_to_race'),
             path('record', views.RecordRace.as_view(), name='record_race'),
             path('unrecord', views.UnrecordRace.as_view(), name='unrecord_race'),
+            path('chat_actions', views.RaceChatActions.as_view(), name='chat_actions'),
+            path('delete_message', views.DeleteMessage.as_view(), name='delete_message'),
 
             path('<str:entrant>/', include([
                 path('accept_request', views.AcceptRequest.as_view(), name='accept_request'),

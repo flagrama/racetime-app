@@ -93,7 +93,7 @@ class RaceChat(Race):
             'messages': list(messages.values()),
             'tick_rate': self.object.tick_rate,
             'chat_message_delay': self.object.chat_message_delay.seconds,
-            'current_user': self.user.get_full_name(),
+            'current_user': None if not self.user.id else self.user.get_full_name(),
             'can_monitor': self.object.can_monitor(self.user),
         })
 
