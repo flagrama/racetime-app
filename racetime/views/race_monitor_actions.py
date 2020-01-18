@@ -82,7 +82,7 @@ class DeleteMessage(MonitorChatAction, generic.FormView):
             raise SafeException(form.errors)
         if not self.get_race().can_monitor(self.user):
             raise SafeException(
-                '%(user)s does not have permission to monitor chat messages.' % {'user': self.user}
+                'You do not have permission to monitor chat messages.' % {'user': self.user}
             )
 
         Message = apps.get_model('racetime', 'Message')
@@ -100,7 +100,7 @@ class RaceChatActions(MonitorChatAction):
         this_race = Race.objects.filter(slug=race)[0]
         if not this_race.can_monitor(self.user):
             raise SafeException(
-                '%(user)s does not have permission to monitor chat messages.' % {'user': self.user}
+                'You do not have permission to monitor chat messages.' % {'user': self.user}
             )
         return render(request, 'racetime/race/monitor_chat.html', {'race': race, 'category': category, 'message_id': request.GET['message_id']})
 
