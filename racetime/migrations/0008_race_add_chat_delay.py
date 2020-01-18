@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('racetime', '0005_race_allow_non_entrant_chat'),
+        ('racetime', '0007_auto_20200118_1032'),
     ]
 
     operations = [
